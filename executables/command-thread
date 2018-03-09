@@ -1,0 +1,26 @@
+#!/bin/bash
+set -o errexit
+
+IFS=$'\n'
+ARG=$*
+
+if [[ $ARG ]]; then
+    echo "Run command-thread..."
+else
+	echo 'Command Thread:'
+	echo "   Execute command in parallel mode."
+    echo '   Use: command-thread "commnad 1" "command 2" "command 3"'
+fi
+
+LIST_PID=()
+for COMMAND in $ARG
+do
+	bash -c "$COMMAND" &
+	PID=$!
+	LIST_PID+=($PID)
+done
+
+for PID in ${LIST_PID[@]}
+do
+	wait $PID && echo "$PID exited normally" || echo "$PID exited abnormally with status $?"
+done
